@@ -44,8 +44,11 @@ export const DateNavigationButton = styled.TouchableOpacity`
   justify-content: center;
 `;
 
-export const CurrentDateText = styled.Text`
+export const CurrentDateButton = styled.TouchableOpacity`
   flex: 1;
+`;
+
+export const CurrentDateText = styled.Text`
   color: #fff;
   text-align: center;
   font-size: 20px;
@@ -56,11 +59,29 @@ export const ControlItem = styled.View`
   flex: 1;
   border-bottom-width: 1px;
   border-bottom-color: #fff;
-  padding: 10px;
+  padding: 20px 10px;
 `;
 
 export const ControlItemTitle = styled.Text`
   color: #fff;
   font-weight: bold;
   font-size: 18px;
+`;
+
+export const DurationContainer = styled.View`
+  flex-direction: row;
+  margin-top: 10px;
+  align-items: center;
+`;
+
+export const InputContainer = styled.View`
+  flex: 2;
+`;
+
+export const DurationSuffixText = styled.Text`
+  flex: 2;
+  font-weight: bold;
+  margin-left: 15px;
+  font-size: 18px;
+  color: #fff;
 `;

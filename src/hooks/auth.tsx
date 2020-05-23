@@ -5,9 +5,13 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
+import { Q } from '@nozbe/watermelondb';
+import { useDatabase } from '@nozbe/watermelondb/hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 
-interface User {
+import User from '../database/models/User';
+
+interface UserData {
   name: string;
   email: string;
 }
@@ -19,7 +23,7 @@ interface AuthState {
 interface AuthContexData {
   user: User;
   loading: boolean;
-  signIn(user: User): Promise<void>;
+  signIn(user: UserData): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -28,6 +32,8 @@ const AuthContext = createContext<AuthContexData>({} as AuthContexData);
 const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
   const [loading, setLoading] = useState(true);
+
+  const database = useDatabase();
 
   useEffect(() => {
     async function loadStoragedData(): Promise<void> {
@@ -43,11 +49,34 @@ const AuthProvider: React.FC = ({ children }) => {
     loadStoragedData();
   }, []);
 
-  const signIn = useCallback(async user => {
-    await AsyncStorage.setItem('@WorkoutCompanion:user', JSON.stringify(user));
+  const signIn = useCallback(
+    async ({ email, name }: UserData) => {
+      const usersCollection = database.collections.get<User>('users');
 
-    setData({ user });
-  }, []);
+      const users = await usersCollection
+        .query(Q.where('email', email))
+        .fetch();
+
+      let user = users[0];
+
+      if (!user) {
+        await database.action(async () => {
+          user = await usersCollection.create(newUser => {
+            newUser.name = name;
+            newUser.email = email;
+          });
+        });
+      }
+
+      await AsyncStorage.setItem(
+        '@WorkoutCompanion:user',
+        JSON.stringify({ id: user.id, name: user.name, email: user.email }),
+      );
+
+      setData({ user });
+    },
+    [database],
+  );
 
   const signOut = useCallback(async () => {
     await AsyncStorage.removeItem('@WorkoutCompanion:user');
