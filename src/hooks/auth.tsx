@@ -10,8 +10,6 @@ import AsyncStorage from '@react-native-community/async-storage';
 interface User {
   name: string;
   email: string;
-  weight: string;
-  height: string;
 }
 
 interface AuthState {

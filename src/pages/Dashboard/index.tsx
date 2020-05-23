@@ -1,10 +1,20 @@
 import React from 'react';
-import {View, Text} from 'react-native';
 
-const Dashboard: React.FC = () => (
-  <View>
-    <Text>Dashboard</Text>
-  </View>
-);
+import { useAuth } from '../../hooks/auth';
+
+import { Container, WelcomeText } from './styles';
+
+const Dashboard: React.FC = () => {
+  const { user } = useAuth();
+
+  return (
+    <Container>
+      <WelcomeText>
+        Olá,
+        {user.name}
+      </WelcomeText>
+    </Container>
+  );
+};
 
 export default Dashboard;
