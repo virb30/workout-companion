@@ -8,6 +8,7 @@ const App = createStackNavigator();
 const AppRoutes: React.FC = () => (
   <App.Navigator
     screenOptions={{
+      headerTitle: 'Controle de Treino',
       headerTintColor: '#fff',
       headerStyle: { backgroundColor: '#1a1818' },
       cardStyle: { backgroundColor: '#383535' },

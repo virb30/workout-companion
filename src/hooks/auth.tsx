@@ -20,6 +20,7 @@ interface AuthContexData {
   user: User;
   loading: boolean;
   signIn(user: User): Promise<void>;
+  signOut(): Promise<void>;
 }
 
 const AuthContext = createContext<AuthContexData>({} as AuthContexData);
@@ -48,8 +49,14 @@ const AuthProvider: React.FC = ({ children }) => {
     setData({ user });
   }, []);
 
+  const signOut = useCallback(async () => {
+    await AsyncStorage.removeItem('@WorkoutCompanion:user');
+
+    setData({} as AuthState);
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user: data.user, loading, signIn }}>
+    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

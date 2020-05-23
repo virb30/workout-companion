@@ -107,6 +107,7 @@ const SignIn: React.FC = () => {
                 autoCorrect={false}
                 autoCapitalize="none"
                 returnKeyType="send"
+                keyboardType="email-address"
                 ref={emailInputRef}
                 onSubmitEditing={() => formRef.current?.submitForm()}
               />
