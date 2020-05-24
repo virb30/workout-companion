@@ -1,4 +1,4 @@
-package com.controletreino;
+package com.virb.workoutcompanion;
 
 import com.facebook.react.ReactActivity;
 
