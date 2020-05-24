@@ -1,19 +1,29 @@
-import styled from 'styled-components';
-import FeatherIcon from 'react-native-vector-icons/Feather';
-import { MenuItem } from 'react-native-material-menu';
+import styled from 'styled-components/native';
+import { Dimensions } from 'react-native';
+import Menu, { MenuItem, MenuItemProps } from 'react-native-material-menu';
 
-export const Icon = styled(FeatherIcon)`
-  margin-right: 16px;
+const { width } = Dimensions.get('window');
+
+interface MaterialMenuItemProps extends MenuItemProps {
+  textColor?: string;
+}
+
+export const Container = styled(Menu)`
+  width: 100%;
+  max-width: ${width / 2}px;
+  background: #242121;
 `;
 
-export const MaterialMenuItem = styled(MenuItem).attrs(props => {
-  return {
-    ...props,
-    style: {},
-    textStyle: {
-      textAlign: 'left',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-    },
-  };
-})``;
+export const MaterialMenuItem = styled(MenuItem).attrs<MaterialMenuItemProps>(
+  props => {
+    const textColor = props.textColor || '#FFF';
+
+    return {
+      ...props,
+      textStyle: {
+        color: textColor,
+        fontSize: 16,
+      },
+    };
+  },
+)<MaterialMenuItemProps>``;

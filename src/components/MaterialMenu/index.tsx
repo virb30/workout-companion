@@ -1,14 +1,18 @@
 import React, { useRef, useCallback } from 'react';
-import Menu, { MenuDivider } from 'react-native-material-menu';
+import Menu from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
+
+import { useAuth } from '../../hooks/auth';
 
 import MenuButton from './MenuButton';
 
-import { Icon, MaterialMenuItem } from './styles';
+import { Container, MaterialMenuItem } from './styles';
 
 const MaterialMenu: React.FC = () => {
   const menuRef = useRef<Menu>(null);
   const navigation = useNavigation();
+
+  const { signOut } = useAuth();
 
   const showMenu = useCallback(() => {
     menuRef.current?.show();
@@ -27,12 +31,17 @@ const MaterialMenu: React.FC = () => {
   );
 
   return (
-    <Menu ref={menuRef} button={<MenuButton onPress={showMenu} />}>
+    <Container ref={menuRef} button={<MenuButton onPress={showMenu} />}>
       <MaterialMenuItem onPress={() => handleNavigate('Help')}>
-        <Icon name="help-circle" size={14} color="#141818" />
+        Minha Conta
+      </MaterialMenuItem>
+      <MaterialMenuItem onPress={() => handleNavigate('Help')}>
         Ajuda
       </MaterialMenuItem>
-    </Menu>
+      <MaterialMenuItem onPress={signOut} textColor="#e84341">
+        Sair
+      </MaterialMenuItem>
+    </Container>
   );
 };
 

@@ -11,9 +11,15 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import User from '../database/models/User';
 
-interface UserData {
-  name: string;
+import LoginError from '../errors/LoginError';
+
+interface SignInData {
   email: string;
+}
+
+interface SignUpData {
+  email: string;
+  name: string;
 }
 
 interface AuthState {
@@ -23,7 +29,8 @@ interface AuthState {
 interface AuthContexData {
   user: User;
   loading: boolean;
-  signIn(user: UserData): Promise<void>;
+  signIn(data: SignInData): Promise<void>;
+  signUp(data: SignUpData): Promise<void>;
   signOut(): Promise<void>;
 }
 
@@ -50,22 +57,17 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const signIn = useCallback(
-    async ({ email, name }: UserData) => {
+    async ({ email }: SignInData) => {
       const usersCollection = database.collections.get<User>('users');
 
       const users = await usersCollection
         .query(Q.where('email', email))
         .fetch();
 
-      let user = users[0];
+      const user = users[0];
 
       if (!user) {
-        await database.action(async () => {
-          user = await usersCollection.create(newUser => {
-            newUser.name = name;
-            newUser.email = email;
-          });
-        });
+        throw new LoginError('User not found');
       }
 
       await AsyncStorage.setItem(
@@ -78,6 +80,20 @@ const AuthProvider: React.FC = ({ children }) => {
     [database],
   );
 
+  const signUp = useCallback(
+    async ({ email, name }: SignUpData) => {
+      const usersCollection = database.collections.get<User>('users');
+
+      await database.action<User>(async () => {
+        await usersCollection.create(newUser => {
+          newUser.name = name;
+          newUser.email = email;
+        });
+      });
+    },
+    [database],
+  );
+
   const signOut = useCallback(async () => {
     await AsyncStorage.removeItem('@WorkoutCompanion:user');
 
@@ -85,7 +101,9 @@ const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user: data.user, loading, signIn, signOut, signUp }}
+    >
       {children}
     </AuthContext.Provider>
   );

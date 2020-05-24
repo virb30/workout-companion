@@ -4,53 +4,57 @@ import {
   Image,
   Platform,
   KeyboardAvoidingView,
-  Alert,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import * as Yup from 'yup';
 
+import { AuthStackParamList } from '../../routes/auth.routes';
 import { useAuth } from '../../hooks/auth';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import getValidationErrors from '../../utils/getValidationErrors';
-import LoginError from '../../errors/LoginError';
 
 import logoImg from '../../assets/Brand.png';
 
-import { Container, Title } from './styles';
+import { Container, Title, StaticInput, StaticInputText, Icon } from './styles';
 
-interface SignInFormData {
-  email: string;
+interface SignUpFormData {
+  name: string;
 }
 
-const SignIn: React.FC = () => {
-  const formRef = useRef<FormHandles>(null);
-  const navigation = useNavigation();
+type SignUpScreenRouteProp = RouteProp<AuthStackParamList, 'SignUp'>;
 
-  const { signIn } = useAuth();
+const SignUp: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
+
+  const { signIn, signUp } = useAuth();
+  const route = useRoute<SignUpScreenRouteProp>();
+
+  const { email } = route.params;
 
   const handleSubmit = useCallback(
-    async (data: SignInFormData) => {
-      const { email } = data;
+    async (data: SignUpFormData) => {
       try {
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
-          email: Yup.string()
-            .required('E-mail obrigatório')
-            .email('Digite um e-mail válido'),
+          name: Yup.string().required('Nome obrigatório'),
         });
 
         await schema.validate(data, { abortEarly: false });
 
-        await signIn({
+        await signUp({
           email,
+          name: data.name,
         });
+
+        await signIn({ email });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -60,18 +64,13 @@ const SignIn: React.FC = () => {
           return;
         }
 
-        if (err instanceof LoginError) {
-          navigation.navigate('SignUp', { params: { email } });
-          return;
-        }
-
         Alert.alert(
-          'Erro ao abrir',
-          'Ocorreu um erro ao abrir aplicação, tente novamente',
+          'Erro ao cadastrar',
+          'Ocorreu um erro criar sua conta, tente novamente',
         );
       }
     },
-    [signIn, navigation],
+    [signIn, signUp, email],
   );
 
   return (
@@ -89,24 +88,28 @@ const SignIn: React.FC = () => {
             <Image source={logoImg} />
 
             <View>
-              <Title>Comece a usar</Title>
+              <Title>Complete seu cadastro</Title>
             </View>
 
             <Form onSubmit={handleSubmit} ref={formRef}>
+              <StaticInput>
+                <Icon name="mail" size={16} />
+                <StaticInputText>{email}</StaticInputText>
+              </StaticInput>
+
               <Input
-                name="email"
-                icon="mail"
-                placeholder="E-mail"
+                name="name"
+                icon="user"
+                placeholder="Nome"
                 autoCorrect={false}
-                autoCapitalize="none"
-                returnKeyType="send"
-                keyboardType="email-address"
+                autoCapitalize="words"
+                returnKeyType="next"
                 onSubmitEditing={() => formRef.current?.submitForm()}
               />
             </Form>
 
             <Button onPress={() => formRef.current?.submitForm()}>
-              Continuar
+              Começar a usar
             </Button>
           </Container>
         </ScrollView>
@@ -115,4 +118,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
