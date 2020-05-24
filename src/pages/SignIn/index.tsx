@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   Image,
@@ -29,7 +29,6 @@ interface SignInFormData {
 }
 
 const SignIn: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
   const navigation = useNavigation();
 
@@ -37,7 +36,6 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (data: SignInFormData) => {
-      setLoading(true);
       const { email } = data;
       try {
         formRef.current?.setErrors({});
@@ -71,8 +69,6 @@ const SignIn: React.FC = () => {
           'Erro ao abrir',
           'Ocorreu um erro ao abrir aplicação, tente novamente',
         );
-      } finally {
-        setLoading(false);
       }
     },
     [signIn, navigation],
@@ -109,10 +105,7 @@ const SignIn: React.FC = () => {
               />
             </Form>
 
-            <Button
-              onPress={() => formRef.current?.submitForm()}
-              loading={loading}
-            >
+            <Button onPress={() => formRef.current?.submitForm()}>
               Continuar
             </Button>
           </Container>

@@ -5,7 +5,7 @@ export const Container = styled.View`
 `;
 
 export const PrivacyPolicyTitle = styled.Text`
-  color: #fff;
+  color: #f57c00;
   font-size: 18px;
   text-align: center;
   padding: 10px;

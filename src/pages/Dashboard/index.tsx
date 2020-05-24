@@ -68,38 +68,35 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    async function loadData(): Promise<void> {
-      const trainningsCollection = database.collections.get<Trainning>(
-        'trainnings',
-      );
+    const trainningsCollection = database.collections.get<Trainning>(
+      'trainnings',
+    );
 
-      const trainningRecords = await trainningsCollection
-        .query(
-          Q.where('date', selectedDate.getTime()),
-          Q.and(Q.where('user_id', user.id)),
-        )
-        .fetch();
+    trainningsCollection
+      .query(
+        Q.where('date', selectedDate.getTime()),
+        Q.and(Q.where('user_id', user.id)),
+      )
+      .fetch()
+      .then(trainningRecords => {
+        const dayTrainningRecord = trainningRecords[0];
 
-      const dayTrainningRecord = trainningRecords[0];
+        if (dayTrainningRecord) {
+          const { tqr, rpe, cps, duration } = dayTrainningRecord;
 
-      if (dayTrainningRecord) {
-        const { tqr, rpe, cps, duration } = dayTrainningRecord;
+          formRef.current?.setData({
+            tqr,
+            rpe,
+            cps,
+            duration: String(duration),
+          });
+          setTrainningId(dayTrainningRecord.id);
+          return;
+        }
 
-        formRef.current?.setData({
-          tqr,
-          rpe,
-          cps,
-          duration: String(duration),
-        });
-        setTrainningId(dayTrainningRecord.id);
-        return;
-      }
-
-      formRef.current?.reset();
-      setTrainningId(undefined);
-    }
-
-    loadData();
+        formRef.current?.reset();
+        setTrainningId(undefined);
+      });
   }, [selectedDate, user.id, database.collections]);
 
   const formattedDate = useMemo(() => {

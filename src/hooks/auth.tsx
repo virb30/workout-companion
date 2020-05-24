@@ -43,17 +43,13 @@ const AuthProvider: React.FC = ({ children }) => {
   const database = useDatabase();
 
   useEffect(() => {
-    async function loadStoragedData(): Promise<void> {
-      const user = await AsyncStorage.getItem('@WorkoutCompanion:user');
-
+    AsyncStorage.getItem('@WorkoutCompanion:user').then(user => {
       if (user) {
         setData({ user: JSON.parse(user) });
       }
 
       setLoading(false);
-    }
-
-    loadStoragedData();
+    });
   }, []);
 
   const signIn = useCallback(

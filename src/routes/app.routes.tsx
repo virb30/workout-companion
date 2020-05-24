@@ -38,12 +38,15 @@ const AppRoutes: React.FC = () => {
       <App.Screen
         name="Privacy"
         component={Privacy}
-        options={{ headerTitle: 'Política de privacidade' }}
+        options={{
+          headerTitle: 'Política de privacidade',
+          headerRight: undefined,
+        }}
       />
       <App.Screen
         name="FAQ"
         component={FAQScreen}
-        options={{ headerTitle: 'FAQ' }}
+        options={{ headerTitle: 'FAQ', headerRight: undefined }}
       />
     </App.Navigator>
   );

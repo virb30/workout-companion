@@ -28,6 +28,18 @@ export const StaticInputText = styled.Text`
 `;
 
 export const Icon = styled(FeatherIcons)`
-  color: #ddd;
   margin-right: 16px;
+`;
+
+export const BackButton = styled.TouchableOpacity`
+  margin-top: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const BackButtonText = styled.Text`
+  color: #f57c00;
+  font-size: 16px;
+  font-weight: bold;
 `;

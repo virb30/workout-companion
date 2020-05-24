@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   View,
   Image,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import * as Yup from 'yup';
 
 import { AuthStackParamList } from '../../routes/auth.routes';
@@ -22,7 +22,15 @@ import getValidationErrors from '../../utils/getValidationErrors';
 
 import logoImg from '../../assets/Brand.png';
 
-import { Container, Title, StaticInput, StaticInputText, Icon } from './styles';
+import {
+  Container,
+  Title,
+  StaticInput,
+  StaticInputText,
+  Icon,
+  BackButton,
+  BackButtonText,
+} from './styles';
 
 interface SignUpFormData {
   name: string;
@@ -31,17 +39,16 @@ interface SignUpFormData {
 type SignUpScreenRouteProp = RouteProp<AuthStackParamList, 'SignUp'>;
 
 const SignUp: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
 
   const { signIn, signUp } = useAuth();
   const route = useRoute<SignUpScreenRouteProp>();
+  const navigation = useNavigation();
 
   const { email } = route.params;
 
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
-      setLoading(true);
       try {
         formRef.current?.setErrors({});
 
@@ -70,12 +77,14 @@ const SignUp: React.FC = () => {
           'Erro ao cadastrar',
           'Ocorreu um erro criar sua conta, tente novamente',
         );
-      } finally {
-        setLoading(false);
       }
     },
     [signIn, signUp, email],
   );
+
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   return (
     <>
@@ -97,7 +106,7 @@ const SignUp: React.FC = () => {
 
             <Form onSubmit={handleSubmit} ref={formRef}>
               <StaticInput>
-                <Icon name="mail" size={20} />
+                <Icon name="mail" size={20} color="#ddd" />
                 <StaticInputText>{email}</StaticInputText>
               </StaticInput>
 
@@ -107,17 +116,19 @@ const SignUp: React.FC = () => {
                 placeholder="Nome"
                 autoCorrect={false}
                 autoCapitalize="words"
-                returnKeyType="next"
+                returnKeyType="send"
                 onSubmitEditing={() => formRef.current?.submitForm()}
               />
             </Form>
 
-            <Button
-              onPress={() => formRef.current?.submitForm()}
-              loading={loading}
-            >
+            <Button onPress={() => formRef.current?.submitForm()}>
               Começar a usar
             </Button>
+
+            <BackButton onPress={handleGoBack}>
+              <Icon name="log-in" color="#f57c00" size={18} />
+              <BackButtonText>Voltar</BackButtonText>
+            </BackButton>
           </Container>
         </ScrollView>
       </KeyboardAvoidingView>
