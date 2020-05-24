@@ -9,9 +9,9 @@ import { addDays, subDays, format, startOfDay } from 'date-fns';
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Keyboard,
   Alert,
+  Animated,
 } from 'react-native';
 import DatePicker from '@react-native-community/datetimepicker';
 import { Form } from '@unform/mobile';
@@ -27,7 +27,6 @@ import Input from '../../components/Input';
 
 import {
   Container,
-  SignOutButton,
   DateNavigation,
   CurrentDateText,
   Icon,
@@ -61,6 +60,8 @@ const Dashboard: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const formRef = useRef<FormHandles>(null);
   const database = useDatabase();
+
+  const translateX = new Animated.Value(0);
 
   const { user } = useAuth();
 
@@ -106,14 +107,30 @@ const Dashboard: React.FC = () => {
   const handleNextDay = useCallback(() => {
     const newDate = addDays(selectedDate, 1);
 
-    setSelectedDate(startOfDay(newDate));
-  }, [selectedDate]);
+    Animated.timing(translateX, {
+      toValue: -100,
+      delay: 50,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedDate(startOfDay(newDate));
+    });
+  }, [selectedDate, translateX]);
 
   const handlePreviousDay = useCallback(() => {
     const newDate = subDays(selectedDate, 1);
 
-    setSelectedDate(startOfDay(newDate));
-  }, [selectedDate]);
+    Animated.timing(translateX, {
+      toValue: 100,
+      delay: 50,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedDate(startOfDay(newDate));
+    });
+  }, [selectedDate, translateX]);
+
+  const handleShowDatePicker = useCallback(() => {
+    setShowDatePicker(true);
+  }, []);
 
   const handleChangeDate = useCallback((event, date) => {
     setShowDatePicker(false);
@@ -173,7 +190,7 @@ const Dashboard: React.FC = () => {
             <Icon name="chevron-left" color="#fff" size={24} />
           </DateNavigationButton>
 
-          <CurrentDateButton onPress={() => setShowDatePicker(true)}>
+          <CurrentDateButton onPress={handleShowDatePicker}>
             <CurrentDateText>{formattedDate}</CurrentDateText>
           </CurrentDateButton>
 
@@ -181,7 +198,21 @@ const Dashboard: React.FC = () => {
             <Icon name="chevron-right" color="#fff" size={24} />
           </DateNavigationButton>
         </DateNavigation>
-        <ScrollView keyboardShouldPersistTaps="handled">
+
+        <Animated.ScrollView
+          bounces
+          keyboardShouldPersistTaps="handled"
+          style={{
+            transform: [
+              {
+                translateX: translateX.interpolate({
+                  inputRange: [-100, 0, 100],
+                  outputRange: [-400, 0, 400],
+                }),
+              },
+            ],
+          }}
+        >
           <Container>
             {showDatePicker && (
               <DatePicker
@@ -245,11 +276,7 @@ const Dashboard: React.FC = () => {
               </ControlItem>
             </Form>
           </Container>
-
-          {/* <SignOutButton onPress={signOut}>
-            <Icon name="power" color="#fff" size={24} />
-          </SignOutButton> */}
-        </ScrollView>
+        </Animated.ScrollView>
       </KeyboardAvoidingView>
       <Button onPress={() => formRef.current?.submitForm()}>SALVAR</Button>
     </>
