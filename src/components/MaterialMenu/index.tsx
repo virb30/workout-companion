@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react';
-import Menu from 'react-native-material-menu';
+import Menu, { MenuDivider } from 'react-native-material-menu';
 import { useNavigation } from '@react-navigation/native';
 
 import { useAuth } from '../../hooks/auth';
@@ -12,7 +12,7 @@ const MaterialMenu: React.FC = () => {
   const menuRef = useRef<Menu>(null);
   const navigation = useNavigation();
 
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const showMenu = useCallback(() => {
     menuRef.current?.show();
@@ -32,13 +32,15 @@ const MaterialMenu: React.FC = () => {
 
   return (
     <Container ref={menuRef} button={<MenuButton onPress={showMenu} />}>
-      <MaterialMenuItem onPress={() => handleNavigate('Help')}>
-        Minha Conta
+      <MaterialMenuItem disabled disabledTextColor="#BBB" textSize={14}>
+        {`${user.email}`}
       </MaterialMenuItem>
+      <MenuDivider color="#999" />
       <MaterialMenuItem onPress={() => handleNavigate('Help')}>
         Ajuda
       </MaterialMenuItem>
-      <MaterialMenuItem onPress={signOut} textColor="#e84341">
+      <MenuDivider color="#999" />
+      <MaterialMenuItem onPress={signOut} textColor="#ff5131">
         Sair
       </MaterialMenuItem>
     </Container>

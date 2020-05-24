@@ -17,14 +17,17 @@ export const Title = styled.Text`
 export const StaticInput = styled.View`
   flex-direction: row;
   align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  padding: 0 16px;
 `;
 
 export const StaticInputText = styled.Text`
-  font-size: 20px;
-  color: #f4ede8;
+  font-size: 16px;
+  color: #ddd;
 `;
 
 export const Icon = styled(FeatherIcons)`
-  color: #f4ede8;
-  margin-left: 16px;
+  color: #ddd;
+  margin-right: 16px;
 `;

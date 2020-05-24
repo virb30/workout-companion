@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import {
   View,
   Image,
@@ -31,6 +31,7 @@ interface SignUpFormData {
 type SignUpScreenRouteProp = RouteProp<AuthStackParamList, 'SignUp'>;
 
 const SignUp: React.FC = () => {
+  const [loading, setLoading] = useState(false);
   const formRef = useRef<FormHandles>(null);
 
   const { signIn, signUp } = useAuth();
@@ -40,6 +41,7 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (data: SignUpFormData) => {
+      setLoading(true);
       try {
         formRef.current?.setErrors({});
 
@@ -68,6 +70,8 @@ const SignUp: React.FC = () => {
           'Erro ao cadastrar',
           'Ocorreu um erro criar sua conta, tente novamente',
         );
+      } finally {
+        setLoading(false);
       }
     },
     [signIn, signUp, email],
@@ -93,7 +97,7 @@ const SignUp: React.FC = () => {
 
             <Form onSubmit={handleSubmit} ref={formRef}>
               <StaticInput>
-                <Icon name="mail" size={16} />
+                <Icon name="mail" size={20} />
                 <StaticInputText>{email}</StaticInputText>
               </StaticInput>
 
@@ -108,7 +112,10 @@ const SignUp: React.FC = () => {
               />
             </Form>
 
-            <Button onPress={() => formRef.current?.submitForm()}>
+            <Button
+              onPress={() => formRef.current?.submitForm()}
+              loading={loading}
+            >
               Começar a usar
             </Button>
           </Container>

@@ -5,6 +5,8 @@ import MaterialMenu from '../components/MaterialMenu';
 
 import Dashboard from '../pages/Dashboard';
 import Help from '../pages/Help';
+import Privacy from '../pages/Privacy';
+import FAQScreen from '../pages/FAQScreen';
 
 const App = createStackNavigator();
 
@@ -32,6 +34,16 @@ const AppRoutes: React.FC = () => {
         options={{
           headerTitle: 'Ajuda',
         }}
+      />
+      <App.Screen
+        name="Privacy"
+        component={Privacy}
+        options={{ headerTitle: 'Política de privacidade' }}
+      />
+      <App.Screen
+        name="FAQ"
+        component={FAQScreen}
+        options={{ headerTitle: 'FAQ' }}
       />
     </App.Navigator>
   );

@@ -11,17 +11,6 @@ export const WelcomeText = styled.Text`
   color: #f4ede8;
 `;
 
-export const SignOutButton = styled.TouchableOpacity`
-  width: 48px;
-  height: 48px;
-  padding: 0;
-
-  background: #1a1818;
-
-  align-items: center;
-  justify-content: center;
-`;
-
 export const Icon = styled(FeatherIcon)``;
 
 export const DateNavigation = styled.View`

@@ -57,7 +57,9 @@ const initialData = {
 const Dashboard: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
   const [trainningId, setTrainningId] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+
   const formRef = useRef<FormHandles>(null);
   const database = useDatabase();
 
@@ -141,15 +143,29 @@ const Dashboard: React.FC = () => {
 
   const handleSubmit = useCallback(
     async (data: ControlFormData) => {
-      const trainningsCollection = database.collections.get<Trainning>(
-        'trainnings',
-      );
-      const { rpe, cps, tqr, duration } = data;
+      setLoading(true);
+      try {
+        const trainningsCollection = database.collections.get<Trainning>(
+          'trainnings',
+        );
+        const { rpe, cps, tqr, duration } = data;
 
-      await database.action(async () => {
-        if (trainningId) {
-          const trainning = await trainningsCollection.find(trainningId);
-          await trainning.update(record => {
+        const savedTrainning = await database.action<Trainning>(async () => {
+          if (trainningId) {
+            const trainning = await trainningsCollection.find(trainningId);
+            await trainning.update(record => {
+              record.rpe = rpe;
+              record.cps = cps;
+              record.tqr = tqr;
+              record.duration = Number(duration);
+              record.date = selectedDate;
+              record.user_id = user.id;
+            });
+
+            return trainning;
+          }
+
+          const newTrainning = await trainningsCollection.create(record => {
             record.rpe = rpe;
             record.cps = cps;
             record.tqr = tqr;
@@ -158,22 +174,28 @@ const Dashboard: React.FC = () => {
             record.user_id = user.id;
           });
 
-          return;
-        }
-
-        await trainningsCollection.create(record => {
-          record.rpe = rpe;
-          record.cps = cps;
-          record.tqr = tqr;
-          record.duration = Number(duration);
-          record.date = selectedDate;
-          record.user_id = user.id;
+          return newTrainning;
         });
-      });
 
-      Alert.alert('Registro salvo', 'Registro salvo com sucesso');
+        setTrainningId(savedTrainning.id);
 
-      Keyboard.dismiss();
+        formRef.current?.setData({
+          rpe: savedTrainning.rpe,
+          cps: savedTrainning.cps,
+          tqr: savedTrainning.tqr,
+          duration: String(savedTrainning.duration),
+        });
+
+        Alert.alert('Registro salvo', 'Registro salvo com sucesso');
+      } catch (err) {
+        Alert.alert(
+          'Erro ao salvar',
+          'Ocorreu um erro ao registrar o treino. Tente novamente',
+        );
+      } finally {
+        setLoading(false);
+        Keyboard.dismiss();
+      }
     },
     [database, selectedDate, trainningId, user.id],
   );
@@ -278,7 +300,9 @@ const Dashboard: React.FC = () => {
           </Container>
         </Animated.ScrollView>
       </KeyboardAvoidingView>
-      <Button onPress={() => formRef.current?.submitForm()}>SALVAR</Button>
+      <Button onPress={() => formRef.current?.submitForm()} loading={loading}>
+        SALVAR
+      </Button>
     </>
   );
 };
