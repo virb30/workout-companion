@@ -908,10 +908,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@nozbe/watermelondb@^0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@nozbe/watermelondb/-/watermelondb-0.16.1.tgz#498327008cddcb671340b13664db933bcd64c1da"
-  integrity sha512-vaN14mSnxTTPK6ggwC+rHFYT4+8mbexULDRHOqZujcKuXo7qlrdCFqJATDDReNOVGDeqtYNOAXOuTceVPJSh7Q==
+"@nozbe/watermelondb@^0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@nozbe/watermelondb/-/watermelondb-0.16.2.tgz#9c29c426bedb3d3af5d38304344bb49d60ddd1af"
+  integrity sha512-LLOEl13bVCiLsZf8QCHt5KUmuks7QnMtsXuhBB2rSb1vBDjc3mG2HmkH/eTzbgJnGIdFzH/XtoVUHlS/ll7Log==
   dependencies:
     lodash.clonedeep "^4.5.0"
     lokijs "git+https://github.com/Nozbe/LokiJS.git#d08f660"
